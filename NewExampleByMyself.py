@@ -31,11 +31,11 @@ class myExample(object):
 		self.matrixSize = 30
 		self.dataSize = 90000
 		self.batchSize = 300
-		self.training_epochs = 10
-		self.learning_rate = 0.01
+		self.training_epochs = 100
+		self.learning_rate = 0.001
 		self.n_input = self.matrixSize ** 2
-		self.n_hidden_1 = 600
-		self.n_hidden_2 = 200
+		self.n_hidden_1 = 500
+		self.n_hidden_2 = 500
 
 	# Generate data for feeding with batches
 	def dataGenerator(self):
@@ -98,7 +98,7 @@ class myExample(object):
 		y_true = X
 
 		# define lost function and optimizer
-		cost = tf.reduce_mean(tf.pow(y_true - y_pred, 2))
+		cost = tf.reduce_mean(tf.abs(tf.pow(y_true - y_pred, 1)))
 		optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(cost)
 
 		# start session
@@ -116,7 +116,7 @@ class myExample(object):
 
 			# test 
 			numOfPics = 10
-			testData = data[0][:numOfPics]
+			testData = data[-1][:numOfPics]
 			encode_decode = sess.run(
 				y_pred, feed_dict = {X: testData})
 			f, a = plt.subplots(2, 10, figsize = (10, 2))
