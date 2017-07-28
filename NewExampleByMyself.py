@@ -29,13 +29,13 @@ class myExample(object):
 	def __init__(self):
 		# parameter settings here
 		self.matrixSize = 30
-		self.dataSize = 10000
-		self.batchSize = 100
-		self.training_epochs = 5
-		self.learning_rate = 0.1
+		self.dataSize = 90000
+		self.batchSize = 300
+		self.training_epochs = 10
+		self.learning_rate = 0.01
 		self.n_input = self.matrixSize ** 2
-		self.n_hidden_1 = 100
-		self.n_hidden_2 = 2
+		self.n_hidden_1 = 600
+		self.n_hidden_2 = 200
 
 	# Generate data for feeding with batches
 	def dataGenerator(self):
@@ -54,7 +54,7 @@ class myExample(object):
 		for i in range(self.matrixSize):
 			data[row - 1][i] = 1
 			data[i][col - 1] = 1
-		return tf.convert_to_tensor([list(data.flatten())])
+		return list(data.flatten())
 
 	def tfModel(self):
 		def encoder(x):
@@ -88,7 +88,7 @@ class myExample(object):
 		}
 
 		# X is the input matrix data
-		X = tf.placeholder('float', [1, self.n_input])
+		X = tf.placeholder('float', [None, self.n_input])
 
 		encoder_op = encoder(X)
 		decoder_op = decoder(encoder_op)
@@ -110,12 +110,21 @@ class myExample(object):
 			for epoch in range(self.training_epochs):
 				for i in range(total_batch):
 					batch = data[i]
+					# pdb.set_trace()
 					_, c = sess.run([optimizer, cost], feed_dict = {X: batch})
 				print('Epoch:', '%04d' % (epoch + 1), 'cost = ', '{:.9f}'.format(c))
 
-			# test hidden layer and y_pred
-			testData = data[0][:10]
-			h, p = sess.run([encoder_op, y_pred], feed_dict = {X: testData})
+			# test 
+			numOfPics = 10
+			testData = data[0][:numOfPics]
+			encode_decode = sess.run(
+				y_pred, feed_dict = {X: testData})
+			f, a = plt.subplots(2, 10, figsize = (10, 2))
+			# pdb.set_trace()
+			for i in range(numOfPics):
+				a[0][i].imshow(np.reshape(testData[i], (self.matrixSize, self.matrixSize)))
+				a[1][i].imshow(np.reshape(encode_decode[i], (self.matrixSize, self.matrixSize)))
+			plt.show()
 
 if __name__ == '__main__':
 	myExample().tfModel()
