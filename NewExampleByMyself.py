@@ -29,13 +29,13 @@ class myExample(object):
 	def __init__(self):
 		# parameter settings here
 		self.matrixSize = 30
-		self.dataSize = 90000
-		self.batchSize = 300
-		self.training_epochs = 100
+		self.dataSize = 900#00
+		self.batchSize = 30#0
+		self.training_epochs = 10#0
 		self.learning_rate = 0.001
 		self.n_input = self.matrixSize ** 2
-		self.n_hidden_1 = 500
-		self.n_hidden_2 = 500
+		self.n_hidden_1 = 300
+		self.n_hidden_2 = 100
 
 	# Generate data for feeding with batches
 	def dataGenerator(self):
@@ -58,17 +58,19 @@ class myExample(object):
 
 	def tfModel(self):
 		def encoder(x):
-			layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(x, self.weights['encoder_h1']),
-				self.biases['encoder_b1']))
-			layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, self.weights['encoder_h2']),
-				self.biases['encoder_b2']))
+			with tf.device('/gpu:0'):
+				layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(x, self.weights['encoder_h1']),
+					self.biases['encoder_b1']))
+				layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, self.weights['encoder_h2']),
+					self.biases['encoder_b2']))
 			return layer_2
 
 		def decoder(x):
-			layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(x, self.weights['decoder_h1']),
-				self.biases['decoder_b1']))
-			layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, self.weights['decoder_h2']),
-				self.biases['decoder_b2']))
+			with tf.device('/gpu:0'):
+				layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(x, self.weights['decoder_h1']),
+					self.biases['decoder_b1']))
+				layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, self.weights['decoder_h2']),
+					self.biases['decoder_b2']))
 			return layer_2
 
 		data = self.dataGenerator()
@@ -102,7 +104,7 @@ class myExample(object):
 		optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(cost)
 
 		# start session
-		with tf.Session() as sess:
+		with tf.Session(config = tf.ConfigProto(log_device_placement = True)) as sess:
 			init = tf.global_variables_initializer()
 			sess.run(init)
 
