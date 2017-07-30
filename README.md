@@ -22,4 +22,4 @@ Learn more about tensorflow                             COMPLETED
 
 July 27 - July 30:
 
-Try a self-defined small project, using autoencoder + tensorflow + GPU-version (NewExampleByMyself.py)
+Try a self-defined small project, using autoencoder + tensorflow + GPU-version (NewExampleByMyself.py)  COMPLETED
